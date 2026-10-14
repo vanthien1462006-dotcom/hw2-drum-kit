@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Drum Kit</title>
+  <meta name="description" content="A web drum kit you can play with the keyboard or the mouse, with a small beat recorder.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header>
+    <h1>Web Drum Kit</h1>
+    <p>Press the keys A S D F G H J K or click the pads.</p>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section aria-labelledby="pads-heading">
+      <h2 id="pads-heading">Drum pads</h2>
+      <ul class="pad-grid">
+        <li>
+          <button type="button" class="drum-pad" data-key="a" data-sound="sounds/kick.wav" aria-keyshortcuts="A">
+            <kbd>A</kbd>
+            <span class="pad-name">Kick</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="s" data-sound="sounds/snare.wav" aria-keyshortcuts="S">
+            <kbd>S</kbd>
+            <span class="pad-name">Snare</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="d" data-sound="sounds/hihat.wav" aria-keyshortcuts="D">
+            <kbd>D</kbd>
+            <span class="pad-name">Hi-hat</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="f" data-sound="sounds/openhat.wav" aria-keyshortcuts="F">
+            <kbd>F</kbd>
+            <span class="pad-name">Open hat</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="g" data-sound="sounds/clap.wav" aria-keyshortcuts="G">
+            <kbd>G</kbd>
+            <span class="pad-name">Clap</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="h" data-sound="sounds/tom-high.wav" aria-keyshortcuts="H">
+            <kbd>H</kbd>
+            <span class="pad-name">Tom high</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="j" data-sound="sounds/tom-low.wav" aria-keyshortcuts="J">
+            <kbd>J</kbd>
+            <span class="pad-name">Tom low</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="drum-pad" data-key="k" data-sound="sounds/crash.wav" aria-keyshortcuts="K">
+            <kbd>K</kbd>
+            <span class="pad-name">Crash</span>
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="recorder-heading">
+      <h2 id="recorder-heading">Beat recorder</h2>
+      <button type="button" id="rec-start">Record</button>
+      <button type="button" id="rec-stop" disabled>Stop</button>
+      <button type="button" id="rec-play" disabled>Play</button>
+      <output id="rec-status" role="status" aria-live="polite">Ready.</output>
+    </section>
+  </main>
+
+  <footer>
+    <p>All sounds are synthesized locally. No external files are used.</p>
+  </footer>
+</body>
+</html>
