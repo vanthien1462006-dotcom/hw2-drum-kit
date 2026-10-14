@@ -1,1 +1,199 @@
-/* stub: filled in S3 */
+/* Page layout, pad grid and recorder controls. Mobile-first (375px base). */
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  transform: translateY(-300%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+body > header,
+body > main,
+body > footer {
+  max-inline-size: 60rem;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+body > header {
+  padding-block: var(--space-6) var(--space-4);
+}
+
+body > header h1 {
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  color: var(--accent);
+  text-shadow: 0 0 1rem var(--glow);
+}
+
+body > header p {
+  margin-block-start: var(--space-2);
+  color: var(--text-muted);
+}
+
+body > main {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-4);
+}
+
+body > main:focus {
+  outline: none;
+}
+
+body > footer {
+  padding-block: var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+main h2 {
+  margin-block-end: var(--space-3);
+  font-size: var(--font-size-lg);
+  line-height: 1.3;
+}
+
+/* Pad grid: about 2 columns at 375px, more columns as the viewport grows. */
+.pad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  gap: var(--space-3);
+}
+
+.drum-pad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  inline-size: 100%;
+  aspect-ratio: 1 / 1;
+  min-block-size: 6rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    transform var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.drum-pad kbd {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.drum-pad .pad-name {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.drum-pad:hover {
+  border-color: var(--accent);
+}
+
+.drum-pad:active,
+.drum-pad.active {
+  border-color: var(--accent);
+  background-color: var(--surface-active);
+  box-shadow: 0 0 1.25rem var(--glow);
+  transform: scale(0.96);
+}
+
+.drum-pad:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* Beat recorder */
+[aria-labelledby="recorder-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+[aria-labelledby="recorder-heading"] h2,
+#rec-status {
+  flex-basis: 100%;
+}
+
+[aria-labelledby="recorder-heading"] h2 {
+  margin-block-end: 0;
+}
+
+#rec-start,
+#rec-stop,
+#rec-play {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding-inline: var(--space-5);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+#rec-start:hover:not(:disabled),
+#rec-stop:hover:not(:disabled),
+#rec-play:hover:not(:disabled) {
+  border-color: var(--accent-2);
+  background-color: var(--surface-active);
+}
+
+#rec-start:focus-visible,
+#rec-stop:focus-visible,
+#rec-play:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+#rec-start:disabled,
+#rec-stop:disabled,
+#rec-play:disabled {
+  border-style: dashed;
+  color: var(--text-muted);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+#rec-status {
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: 4px solid var(--accent-2);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+}
+
+@media (min-width: 48rem) {
+  body > header h1 {
+    font-size: var(--font-size-2xl);
+  }
+}
