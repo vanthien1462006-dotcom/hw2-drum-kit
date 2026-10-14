@@ -1,1 +1,43 @@
-/* stub: filled in S2 */
+/* Design tokens: the only file that declares color values. Single dark studio theme. */
+:root {
+  /* Colors */
+  --bg: #0c1633;
+  --surface: #080f26;
+  --surface-active: #16285a;
+  --text: #e8eefc;
+  --text-muted: #a3b3d9;
+  --border: #5a76b8;
+  --accent: #22e0ff;
+  --accent-2: #ff4df0;
+  --on-accent: #04101f;
+  --focus-ring: #ffd84d;
+  --glow: rgb(34 224 255 / 55%);
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.25rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 999px;
+
+  /* Motion */
+  --transition-fast: 100ms;
+}
