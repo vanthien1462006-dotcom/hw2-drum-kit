@@ -1,0 +1,1662 @@
+
+> /clear
+
+> <ide_opened_file>The user opened the file
+  c:\Users\USER\Documents\HomeWork_WEBDEV\hw2-drum-kit\project-rules.md in the
+  IDE. This may or may not be related to the current task.</ide_opened_file>
+
+> Hãy đọc project-rules.md. Đây là HW2: Drum Kit Engine (repo hw2-drum-kit).
+  Nhiệm vụ DUY NHẤT lúc này là viết TASK_DECOMPOSITION.md bằng tiếng Anh, chưa
+  viết code HTML/CSS/JS.
+
+  Phạm vi file: chỉ tạo TASK_DECOMPOSITION.md.
+
+  Nội dung bắt buộc (tiếng Anh tự nhiên):
+  1. Overview: trống điện tử chạy bằng bàn phím và chuột, vanilla HTML/CSS/JS,
+  ES modules, Web Audio API, mobile-first 375px, chạy bằng Live Server.
+  2. Bảng WBS (ID, task, file, acceptance criteria, commit message):
+     - T-01 spec - "docs(spec): define component contracts & WBS table"
+     - S0 sinh âm thanh tổng hợp (tools/generate-sounds.py, sounds/*.wav) -
+  "feat(assets): synthesized drum samples"
+     - S1 file CSS giữ chỗ (css/reset.css, css/tokens.css, css/layout.css, mỗi
+  file 1 dòng comment) - "chore(css): add empty stylesheet placeholders"
+     - Step 1 HTML contract data-sound (chỉ index.html; chưa có file JS nào tồn
+  tại) - "feat(html): data-sound contract"
+     - S2 tokens & reset (css/reset.css, css/tokens.css) - "feat(css): design
+  tokens & box-sizing reset"
+     - S3 layout lưới pad (css/layout.css) - "feat(css): responsive pad grid"
+     - Step 2 audio engine đa âm độc lập (js/audio-engine.js) - "feat(js):
+  polyphonic audio engine"
+     - Step 3 keydown listener có throttle event.repeat + main.js
+  (js/keyboard.js, js/main.js) - "feat(js): keydown listener with repeat
+  throttling"
+     - Step 4 FIFO Beat Recorder (js/recorder.js, js/main.js) - "feat(js): FIFO
+  beat recorder"
+     - Docs README - "docs: readme & live-defense notes"
+  3. HTML data contract: mỗi pad là <button type="button" class="drum-pad"
+  data-key="a" data-sound="sounds/kick.wav" aria-keyshortcuts="A"> nằm trong
+  <li> của <ul class="pad-grid">. Bảng ánh xạ 8 phím: a kick, s snare, d hihat,
+  f openhat, g clap, h tom-high, j tom-low, k crash (file sounds/<tên>.wav).
+  data-key luôn là chữ thường. Cấu hình chỉ nằm trong HTML, JS không có
+  switch/case theo phím.
+  4. Module contracts (chữ ký hàm chính xác):
+     - js/audio-engine.js: export async function resumeAudio(); export async
+  function loadSample(url); export function play(url, options); export function
+  stopAll(). Không truy cập DOM. play trả về boolean, không throw. Mỗi lần
+  play tạo một AudioBufferSourceNode mới (đa âm).
+     - js/keyboard.js: export function bindKeyboard(onKey) trả về hàm unbind.
+  onKey nhận key chữ thường. Bỏ qua event.repeat, tổ hợp Ctrl/Alt/Meta,
+  isComposing và khi focus đang ở trường nhập liệu. Không biết gì về audio.
+     - js/recorder.js: export function createQueue(maxEvents) { enqueue,
+  dequeue, size, toArray, clear } theo FIFO; export function
+  createRecorder(options) trả về { start, stop, record, play, cancel,
+  isRecording, size }. Mỗi sự kiện là { key, t } với t là mili giây tính từ lúc
+  bắt đầu ghi (performance.now). Quá maxEvents thì bỏ sự kiện cũ nhất.
+     - js/main.js: chỉ nối các module; có hai hằng số SOUND_ATTR = 'data-sound'
+  và KEY_ATTR = 'data-key' là nơi DUY NHẤT biết tên thuộc tính.
+  5. Recorder UI contract (có sẵn trong HTML): #rec-start, #rec-stop, #rec-play
+  (stop và play ban đầu disabled), output#rec-status role="status".
+  6. Verification gate cho từng task.
+  7. Live-defense plan: Test A đổi data-sound thành data-audio-src; Test B thêm
+  phím Space để dừng toàn bộ âm thanh; Test C đổi lưới pad từ repeat(auto-fit,
+  minmax(...)) sang container query; Test D đổi phím gán cho pad. Giải thích
+  thiết kế nào giúp mỗi test chỉ cần sửa rất ít dòng.
+  8. Rules: không one-shot prompt; mỗi task một commit nguyên tử.
+
+  Sau khi viết xong:
+  git add .gitignore CLAUDE.md project-rules.md TASK_DECOMPOSITION.md
+  git commit -m "docs(spec): define component contracts & WBS table"
+
+  Không push. Báo cáo bằng tiếng Việt.
+
+● Tôi kiểm tra nhanh thư mục trước khi viết.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(TASK_DECOMPOSITION.md)
+  ⎿  Wrote 178 lines to TASK_DECOMPOSITION.md
+      1 # HW2 Drum Kit Engine: Task Decomposition
+      3 This document is the specification for HW2. It defines the work b
+        reakdown, the contracts between files, and the checks that gate e
+      4
+      5 ## 1. Overview
+      7 The project is an electronic drum kit that can be played with the
+         keyboard and the mouse (or touch). It is built with vanilla HTML
+         played through the Web Audio API, so several drums can sound at
+        the same time. The layout is mobile-first and designed for a 375p
+        er extension at `http://localhost:5500`, never opened th
+     … +287 lines (ctrl+o to expand)
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      158  Change the constant `SOUND_ATTR` in `js/main.js` (1 line) and 
+           rename the attribute in the 8 pads in `index.html`. No other f
+           ile reads the attribute, because `audio-engine.js` only receiv
+           es a URL string and `keyboard.js` does not know about sounds.
+      159  
+      160  **Test B: add the Space key to stop all sound.**
+      161 -`stopAll()` already exists in the engine. Add one `<button>` i
+          -s not needed. In `main.js`, the keyboard callback needs one ex
+          -tra check for `' '` that calls `stopAll()` (about 3 lines). `k
+          -eyboard.js` already passes the raw lowercase key, so it needs 
+          -no change.                                                    
+      161 +`stopAll()` already exists in the engine, so no HTML change is
+          + needed. In `main.js`, the keyboard callback gets one extra ch
+          +eck for `' '` that calls `stopAll()` (about 3 lines). `keyboar
+          +d.js` already passes the key through, so it needs no change.  
+      162  
+      163  **Test C: change the pad grid to a container query.**
+      164  Only `css/layout.css` changes. Add `container-type: inline-siz
+           e` to the grid wrapper and replace the `repeat(auto-fit, minma
+           x(...))` columns with `@container` rules. HTML and JS are not 
+           affected because layout is fully separated from behavior and a
+           ll sizes come from tokens.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã viết xong TASK_DECOMPOSITION.md (bằng tiếng Anh) và commit. Chưa viết code
+  HTML/CSS/JS và chưa push.
+
+  Commit: 776255e — docs(spec): define component contracts & WBS table. Commit
+  gồm 4 file, đều được stage bằng đường dẫn rõ ràng: .gitignore, CLAUDE.md,
+  project-rules.md, TASK_DECOMPOSITION.md. Sau commit, git status sạch.
+
+  Nội dung file: đủ 8 mục bạn yêu cầu.
+  - Overview: mô tả dự án.
+  - WBS: bảng 10 task, từ T-01 đến Docs, mỗi task có file, tiêu chí chấp nhận và
+    commit message đúng như bạn đưa.
+  - HTML data contract: mẫu pad và bảng 8 phím.
+  - Module contracts: chữ ký hàm của 4 module.
+  - Recorder UI: 3 nút và output#rec-status.
+  - Verification gate: điều kiện kiểm tra cho từng task.
+  - Live-defense: Test A–D, mỗi test giải thích cần sửa ít dòng nhờ thiết kế
+    nào.
+  - Working rules: không one-shot prompt, mỗi task một commit nguyên tử.
+
+  Kiểm tra: chỉ đọc lại file bằng mắt, chưa chạy gì khác vì chưa có code.
+
+  Lưu ý:
+  - Git cảnh báo LF sẽ chuyển thành CRLF ở các file này. Đây chỉ là cảnh báo của
+    Windows, không ảnh hưởng nội dung.
+  - Mục 2 có ghi chú rằng js/main.js được sửa ở cả Step 3 và Step 4. Việc này
+    được phép vì chính task nêu tên file đó.
+  - Test C trong mục 7 giả định bọc lưới pad trong một container cho container
+    query. Quyết định này thuộc task S3, chưa cần làm bây giờ.
+
+  Tôi dừng ở đây và chưa bắt đầu task S0.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md. Chỉ làm task T-01b: sửa 3 chỗ
+  trong TASK_DECOMPOSITION.md cho khớp thiết kế. Không tạo hay sửa file nào
+  khác.
+
+  1. Dòng Step 1 trong bảng WBS: thay ý "the page loads no script" bằng:
+  index.html chứa thẻ <script type="module" src="js/main.js"> nhưng js/main.js
+  CHƯA tồn tại (chủ ý, vì slide yêu cầu commit HTML trước khi chạm JavaScript);
+  do đó chỉ có thể có đúng một lỗi 404 cho js/main.js trong Console cho tới
+  Step 3.
+  2. Mục Verification Gates, dòng Step 1: thay "no console errors and no 404"
+  và "Confirm no <script> tag" bằng: không có lỗi nào ngoài đúng một 404 cho
+  js/main.js; thông báo CSP về script do Live Server chèn vào là thông báo của
+  công cụ, không tính là lỗi của dự án; xác nhận thẻ <script> chỉ có thuộc tính
+  src và không có script inline.
+  3. Dòng S3 trong bảng WBS: thay minmax(min(100%, 17.5rem), 1fr) bằng
+  minmax(min(100%, 8.5rem), 1fr), ghi chú rằng lưới pad nhỏ dùng ngưỡng này để
+  có khoảng 2 cột ở 375px, còn 17.5rem là quy tắc cho lưới thẻ card.
+
+  Giữ nguyên mọi thứ còn lại. Viết bằng tiếng Anh.
+
+  Commit:
+  git add TASK_DECOMPOSITION.md
+  git commit -m "docs(spec): align Step 1 and S3 with the guide"
+
+  Không push, không amend. Báo cáo bằng tiếng Việt.
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      17  | T-01 | Write the specification | `TASK_DECOMPOSITION.md` (plu
+          s the already written `.gitignore`, `CLAUDE.md`, `project-rules
+          .md`) | All 8 sections of this document exist. Every module has
+           an exact function signature. No code files exist yet. | `docs(
+          spec): define component contracts & WBS table` |
+      18  | S0 | Generate synthesized drum sounds | `tools/generate-sound
+          s.py`, `sounds/*.wav` | Script uses only the Python standard li
+          brary. It writes 8 mono 16-bit WAV files named as in section 3.
+           Each file is under 200 KB and is not silent. Running the scrip
+          t twice gives the same files. | `feat(assets): synthesized drum
+           samples` |
+      19  | S1 | Empty stylesheet placeholders | `css/reset.css`, `css/to
+          kens.css`, `css/layout.css` | The three files exist. Each conta
+          ins exactly one comment line and no rules. | `chore(css): add e
+          mpty stylesheet placeholders` |
+      20 -| Step 1 | HTML data contract | `index.html` | Only `index.html
+         -` changes. No JS file exists yet, so the page loads no script. 
+         -Eight pads follow the contract in section 3. One `<h1>`, `lang=
+         -"en"`, charset and viewport meta present. The recorder controls
+         - from section 5 are present. No inline handlers, styles or scri
+         -pts. | `feat(html): data-sound contract` |                     
+      20 +| Step 1 | HTML data contract | `index.html` | Only `index.html
+         +` changes. It contains `<script type="module" src="js/main.js">
+         +`, but `js/main.js` does NOT exist yet. This is intentional, be
+         +cause the course slide requires the HTML commit before any Java
+         +Script is touched. Therefore exactly one 404 error for `js/main
+         +.js` is expected in the Console until Step 3. Eight pads follow
+         + the contract in section 3. One `<h1>`, `lang="en"`, charset an
+         +d viewport meta present. The recorder controls from section 5 a
+         +re present. No inline handlers, styles or scripts. | `feat(html
+         +): data-sound contract` |                                      
+      21  | S2 | Tokens and reset | `css/reset.css`, `css/tokens.css` | R
+          eset sets `box-sizing: border-box`. Tokens define all colors, s
+          pacing, radii and font sizes in `:root`. No hard-coded color ou
+          tside `tokens.css`. Contrast is at least 4.5:1 for text and 3:1
+           for focus indicators. | `feat(css): design tokens & box-sizing
+           reset` |
+      22  | S3 | Pad grid layout | `css/layout.css` | Pads form a respons
+          ive grid using `repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr
+          ))` (the project card-grid rule). Base styles target 375px, wit
+          h no horizontal scroll. Includes a visible `:focus-visible` sty
+          le, an active-state class for pressed pads, and a `prefers-redu
+          ced-motion` rule. | `feat(css): responsive pad grid` |
+      23  | Step 2 | Polyphonic audio engine | `js/audio-engine.js` | Exp
+          orts match section 4. The module never touches the DOM. Overlap
+          ping `play` calls produce overlapping sounds. `play` returns a 
+          boolean and never throws. | `feat(js): polyphonic audio engine`
+           |
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      140  | T-01 | Read the file once through. Check that all 8 sections
+            and all signatures are present. `git status` shows only the 4
+            named files staged. |
+      141  | S0 | Run `python tools/generate-sounds.py`. Check 8 files ex
+           ist, sizes are reasonable, and they play in a media player. |
+      142  | S1 | Each CSS file has exactly one line. No rules. |
+      143 -| Step 1 | Page loads with no console errors and no 404. Valid
+          -ate heading order, labels and attributes by reading the DOM in
+          - DevTools. Confirm no `<script>` tag. |                       
+      143 +| Step 1 | No console errors other than exactly one 404 for `j
+          +s/main.js`. A CSP message about a script injected by Live Serv
+          +er comes from the tool and does not count as a project error. 
+          +Validate heading order, labels and attributes by reading the D
+          +OM in DevTools. Confirm the `<script>` tag has only the `type=
+          +"module"` and `src` attributes and that there is no inline scr
+          +ipt. |                                                        
+      144  | S2 | Check computed `box-sizing`. Search the CSS files for h
+           ex or `rgb(` outside `tokens.css`. Check contrast ratios with 
+           DevTools. |
+      145  | S3 | Resize from 375px to desktop with no horizontal scroll.
+            Tab through pads to see the focus ring. Toggle reduced motion
+            in DevTools rendering panel. |
+      146  | Step 2 | In the console, call `play` twice quickly and hear 
+           overlap. Confirm that `play` with a bad URL returns `false`. C
+           onfirm `stopAll()` silences everything. |
+
+● Update(TASK_DECOMPOSITION.md)
+  ⎿  Added 1 line, removed 1 line
+      19  | S1 | Empty stylesheet placeholders | `css/reset.css`, `css/to
+          kens.css`, `css/layout.css` | The three files exist. Each conta
+          ins exactly one comment line and no rules. | `chore(css): add e
+          mpty stylesheet placeholders` |
+      20  | Step 1 | HTML data contract | `index.html` | Only `index.html
+          ` changes. It contains `<script type="module" src="js/main.js">
+          `, but `js/main.js` does NOT exist yet. This is intentional, be
+          cause the course slide requires the HTML commit before any Java
+          Script is touched. Therefore exactly one 404 error for `js/main
+          .js` is expected in the Console until Step 3. Eight pads follow
+           the contract in section 3. One `<h1>`, `lang="en"`, charset an
+          d viewport meta present. The recorder controls from section 5 a
+          re present. No inline handlers, styles or scripts. | `feat(html
+          ): data-sound contract` |
+      21  | S2 | Tokens and reset | `css/reset.css`, `css/tokens.css` | R
+          eset sets `box-sizing: border-box`. Tokens define all colors, s
+          pacing, radii and font sizes in `:root`. No hard-coded color ou
+          tside `tokens.css`. Contrast is at least 4.5:1 for text and 3:1
+           for focus indicators. | `feat(css): design tokens & box-sizing
+           reset` |
+      22 -| S3 | Pad grid layout | `css/layout.css` | Pads form a respons
+         -ive grid using `repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr
+         -))` (the project card-grid rule). Base styles target 375px, wit
+         -h no horizontal scroll. Includes a visible `:focus-visible` sty
+         -le, an active-state class for pressed pads, and a `prefers-redu
+         -ced-motion` rule. | `feat(css): responsive pad grid` |         
+      22 +| S3 | Pad grid layout | `css/layout.css` | Pads form a respons
+         +ive grid using `repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr)
+         +)`. The small pad grid uses this threshold to get about 2 colum
+         +ns at 375px; `17.5rem` is the rule for card grids. Base styles 
+         +target 375px, with no horizontal scroll. Includes a visible `:f
+         +ocus-visible` style, an active-state class for pressed pads, an
+         +d a `prefers-reduced-motion` rule. | `feat(css): responsive pad
+         + grid` |                                                       
+      23  | Step 2 | Polyphonic audio engine | `js/audio-engine.js` | Exp
+          orts match section 4. The module never touches the DOM. Overlap
+          ping `play` calls produce overlapping sounds. `play` returns a 
+          boolean and never throws. | `feat(js): polyphonic audio engine`
+           |
+      24  | Step 3 | Keyboard listener with repeat throttling, and main |
+           `js/keyboard.js`, `js/main.js` | Pressing a mapped key plays i
+          ts sound once. Holding the key does not retrigger. Ctrl/Alt/Met
+          a combinations and typing in inputs are ignored. Mouse and touc
+          h on a pad also play the sound. The pad gets a visual active st
+          ate. Only `main.js` knows the attribute names. | `feat(js): key
+          down listener with repeat throttling` |
+      25  | Step 4 | FIFO beat recorder | `js/recorder.js`, `js/main.js` 
+          | Record, stop and replay work with the UI from section 5. The 
+          queue drops the oldest event when `maxEvents` is exceeded. Repl
+          ay timing matches the recorded timing. Replay can be cancelled.
+           | `feat(js): FIFO beat recorder` |
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã sửa 3 chỗ trong TASK_DECOMPOSITION.md và commit a16e098 (docs(spec): align
+  Step 1 and S3 with the guide). Chưa push, không amend.
+
+  1. Step 1, bảng WBS: index.html chứa <script type="module" src="js/main.js">,
+     nhưng js/main.js chưa tồn tại, và đó là chủ ý. Lý do ghi trong file là
+     slide yêu cầu commit HTML trước khi chạm JavaScript. Vì vậy chỉ được có
+     đúng một lỗi 404 cho js/main.js trong Console cho tới Step 3.
+  2. Verification Gates, dòng Step 1:
+     - Không có lỗi nào ngoài đúng một 404 cho js/main.js.
+     - Thông báo CSP do Live Server chèn vào là của công cụ, không tính là lỗi
+       của dự án.
+     - Thẻ <script> chỉ có hai thuộc tính type="module" và src, và không có
+       script inline.
+
+     Ở ý cuối tôi ghi "chỉ có type="module" và src" thay vì chỉ "src", vì thẻ
+     vốn có type="module" theo ý 1. Nếu bạn muốn đúng nguyên văn "chỉ có thuộc
+     tính src", tôi sửa lại.
+  3. S3, bảng WBS: đổi 17.5rem thành 8.5rem trong minmax(min(100%, 8.5rem),
+     1fr). Ghi chú thêm là lưới pad nhỏ dùng ngưỡng này để có khoảng 2 cột ở
+     375px, còn 17.5rem là quy tắc cho lưới thẻ card.
+
+  Commit chỉ có 1 file, 3 dòng thêm và 3 dòng xóa. Tôi chỉ kiểm tra bằng git
+  diff --staged --stat và git status (sạch sau commit), chưa đọc lại toàn bộ
+  file.
+
+  Mâu thuẫn còn lại: mục "Project Architectural Constraints" trong
+  project-rules.md vẫn ghi quy tắc lưới card là 17.5rem. Ghi chú mới chỉ nói đây
+  là ngoại lệ cho lưới pad, nên hai file không mâu thuẫn. Tôi giữ nguyên
+  project-rules.md vì nằm ngoài phạm vi task.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục S0). Chỉ làm task S0: tạo
+  âm thanh trống tổng hợp. Chưa động tới HTML/CSS/JS của ứng dụng.
+
+  Phạm vi file được tạo: tools/generate-sounds.py và 8 file trong sounds/:
+  kick.wav, snare.wav, hihat.wav, openhat.wav, clap.wav, tom-high.wav,
+  tom-low.wav, crash.wav.
+
+  Bước 1: chạy "python --version". Nếu có Python 3 thì viết
+  tools/generate-sounds.py chỉ dùng thư viện chuẩn (wave, struct, math,
+  random). Nếu KHÔNG có Python nhưng có Node.js thì viết
+  tools/generate-sounds.mjs theo cách tương tự (chỉ dùng module có sẵn của
+  Node). Nếu không có cả hai thì dừng lại và báo tôi bằng tiếng Việt, đừng tự
+  cài gì.
+
+  Yêu cầu âm thanh: WAV 16-bit PCM, mono, 44100 Hz, có envelope để tránh tiếng
+  "click" ở đầu và cuối, biên độ tối đa 0.9 (không clip), mỗi file nhỏ hơn 150
+  KB.
+  - kick: sóng sin quét tần số từ ~150Hz xuống ~45Hz, giảm biên độ nhanh, ~0.5s
+  - snare: nhiễu trắng + thành phần sin ~190Hz, decay nhanh, ~0.25s
+  - hihat: nhiễu trắng lọc cao (differentiate), decay rất nhanh, ~0.08s
+  - openhat: như hihat nhưng decay chậm, ~0.35s
+  - clap: vài xung nhiễu ngắn nối nhau + đuôi decay, ~0.3s
+  - tom-high / tom-low: sin quét tần số (~200->120Hz và ~130->80Hz), ~0.4s
+  - crash: nhiễu lọc cao, decay dài, ~1.2s
+    Script có hằng số cố định cho random seed để kết quả lặp lại được. Script
+  in ra tên file, độ dài (giây) và dung lượng.
+
+  Bước 2: chạy script, kiểm tra 8 file tồn tại, đúng định dạng (đọc lại bằng
+  module wave) và độ dài hợp lý. Báo bảng kết quả bằng tiếng Việt.
+
+  Commit:
+  git add tools sounds
+  git commit -m "feat(assets): synthesized drum samples"
+
+  Không push.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(tools\generate-sounds.py)
+  ⎿  Wrote 151 lines to tools\generate-sounds.py
+       1 """Generate the synthesized drum samples into ../sounds (standar
+         d library only)."""
+       2
+       3 import math
+       4 import random
+       6 import wave
+       7 from pathlib import Path
+       8
+       9 SAMPLE_RATE = 44100
+      10 SEED = 20240601
+     … +151 lines (ctrl+o to expand)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Task S0 xong. Tôi đã tạo tools/generate-sounds.py và 8 file WAV trong sounds/,
+  rồi commit ee154c6 (feat(assets): synthesized drum samples). Chưa push, chưa
+  động tới HTML/CSS/JS.
+
+  Máy có Python 3.14.5 nên script chỉ dùng thư viện chuẩn (wave, struct, math,
+  random). Seed cố định là 20240601.
+
+  Kiểm tra:
+  - Tôi đọc lại cả 8 file bằng module wave: đều là mono, 16-bit, 44100 Hz.
+  - Biên độ đỉnh đúng 0.9 (không clip) và mẫu đầu, mẫu cuối đều bằng 0 (không
+    click).
+  - Chạy script hai lần cho cùng giá trị md5 của cả 8 file.
+
+  ┌──────────────┬────────┬────────────┐
+  │     File     │ Độ dài │ Dung lượng │
+  ├──────────────┼────────┼────────────┤
+  │ kick.wav     │ 0.50 s │ 44.144 B   │
+  ├──────────────┼────────┼────────────┤
+  │ snare.wav    │ 0.25 s │ 22.094 B   │
+  ├──────────────┼────────┼────────────┤
+  │ hihat.wav    │ 0.08 s │ 7.100 B    │
+  ├──────────────┼────────┼────────────┤
+  │ openhat.wav  │ 0.35 s │ 30.912 B   │
+  ├──────────────┼────────┼────────────┤
+  │ clap.wav     │ 0.30 s │ 26.504 B   │
+  ├──────────────┼────────┼────────────┤
+  │ tom-high.wav │ 0.40 s │ 35.324 B   │
+  ├──────────────┼────────┼────────────┤
+  │ tom-low.wav  │ 0.40 s │ 35.324 B   │
+  ├──────────────┼────────┼────────────┤
+  │ crash.wav    │ 1.20 s │ 105.884 B  │
+  └──────────────┴────────┴────────────┘
+
+  Đều dưới 150 KB; file lớn nhất là crash (~103 KB).
+
+  Tôi chưa nghe thử bằng tai, nên chất lượng âm thanh thực tế chưa được xác
+  nhận; bạn nên nghe qua khi làm Step 2/3. Nếu một âm chưa ưa, chỉnh hằng số tau
+  hoặc tần số trong script rồi chạy lại.
+
+  Git chỉ cảnh báo LF sẽ chuyển thành CRLF trên Windows, không ảnh hưởng nội
+  dung.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md. Chỉ làm S1: tạo 3 file CSS giữ
+  chỗ. Không viết HTML, không tạo bất kỳ file JS nào.
+
+  Phạm vi file được tạo (mỗi file đúng 1 dòng comment "stub: filled in
+  <task>"): css/reset.css (S2), css/tokens.css (S2), css/layout.css (S3). Mục
+  đích: để commit HTML sau đó tham chiếu sẵn các file CSS và các commit CSS về
+  sau chỉ chạm một loại file.
+
+  Commit chỉ 3 file:
+  git add css/reset.css css/tokens.css css/layout.css
+  git commit -m "chore(css): add empty stylesheet placeholders"
+
+  Không push, không amend.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Task S1 xong. Commit eb26bb1 (chore(css): add empty stylesheet placeholders),
+  chưa push, không amend.
+
+  Tôi đã tạo 3 file, mỗi file đúng 1 dòng comment và không có rule nào:
+  - css/reset.css: /* stub: filled in S2 */
+  - css/tokens.css: /* stub: filled in S2 */
+  - css/layout.css: /* stub: filled in S3 */
+
+  Tôi kiểm tra bằng wc -l (mỗi file 1 dòng), git diff --staged --stat (3 file, 3
+  dòng thêm) và git status (sạch sau commit). Tôi không viết HTML và không tạo
+  file JS nào.
+
+  Git chỉ cảnh báo LF sẽ chuyển thành CRLF trên Windows, không ảnh hưởng nội
+  dung.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục Step 1 và HTML data
+  contract). Chỉ làm Step 1: HTML contract. Không viết bất kỳ CSS hay JS nào,
+  và không tạo file JS (các file css/reset.css, css/tokens.css, css/layout.css
+  đã tồn tại từ commit S1).
+
+  Phạm vi file được tạo: chỉ index.html. Trang sẽ tham chiếu js/main.js dù file
+  này chưa tồn tại; đây là chủ ý vì slide yêu cầu commit HTML trước khi chạm
+  JavaScript. Console sẽ có lỗi 404 cho js/main.js cho tới Step 3, đó là bình
+  thường.
+
+  Yêu cầu index.html (tiếng Anh):
+  - DOCTYPE, html lang="en", meta charset, meta viewport, title "Web Drum Kit",
+  meta description, <link rel="icon" href="data:,"> (tránh yêu cầu
+  favicon 404).
+  - Thẻ <meta http-equiv="Content-Security-Policy"> đặt ngay sau meta charset:
+  default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'
+  data:; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action
+  'none'.
+  - Link CSS theo thứ tự reset, tokens, layout; <script type="module"
+  src="js/main.js"></script>.
+  - Body: skip-link tới #main-content; header với h1 "Web Drum Kit" và đoạn
+  hướng dẫn "Press the keys A S D F G H J K or click the pads.";
+  main#main-content (tabindex="-1") gồm section "Drum pads" (h2) chứa
+  ul.pad-grid với 8 li, mỗi li một button.drum-pad theo đúng HTML data contract
+  (data-key chữ thường, data-sound trỏ tới sounds/<tên>.wav,
+  aria-keyshortcuts, bên trong có <kbd> chứa phím chữ hoa và <span
+  class="pad-name"> chứa tên âm); section "Beat recorder" (h2) với 3 button
+  #rec-start ("Record"), #rec-stop ("Stop", disabled), #rec-play ("Play",
+  disabled) và output#rec-status role="status" aria-live="polite" có nội dung
+  ban đầu "Ready."; footer.
+  - Cấu trúc ngữ nghĩa, KHÔNG có inline handler/style/script, không dùng div
+  nếu có thẻ ngữ nghĩa phù hợp. Đúng 1 h1.
+  - Không có phần JS nào xử lý trong commit này.
+
+  Tự kiểm tra: Select-String -Path index.html -Pattern
+  'onclick|style=|<script>' phải rỗng; đếm đúng 8 phần tử có data-sound.
+
+  Commit chỉ index.html:
+  git add index.html
+  git commit -m "feat(html): data-sound contract"
+
+  Không push, không amend.
+
+● Write(index.html)
+  ⎿  Wrote 91 lines to index.html
+       1 <!DOCTYPE html>
+       3 <head>
+       4   <meta charset="UTF-8">
+         c 'none'; script-src 'self'; style-src 'self'; img-src 'self' da
+         ta:; media-src 'self'; connect-src 'self'; base-uri 'none'; form
+       6   <meta name="viewport" content="width=device-width, initial-sca
+         le=1">
+       8   <meta name="description" content="A web drum kit you can play
+         with the keyboard or the mouse, with a small beat recorder.">
+      10   <link rel="stylesheet" href="css/reset.css">
+     … +96 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Step 1 xong. Commit 80e27f9 (feat(html): data-sound contract), chỉ có
+  index.html (91 dòng). Chưa push, không amend, không viết CSS hay JS nào.
+
+  Nội dung index.html:
+  - Có đủ phần <head> bạn yêu cầu: meta, title, description, icon data:,, 3 link
+    CSS theo thứ tự reset → tokens → layout, và <script type="module"
+    src="js/main.js">.
+  - Thẻ CSP đặt ngay sau meta charset, đúng chuỗi bạn đưa.
+  - Phần thân gồm skip-link, header (một h1), main#main-content với
+    tabindex="-1", hai section và footer.
+  - Section "Drum pads" có ul.pad-grid với 8 li, mỗi li chứa một
+    button.drum-pad:
+    - Các thuộc tính data-key (chữ thường), data-sound và aria-keyshortcuts (chữ
+      hoa) đặt theo bảng ánh xạ.
+    - Bên trong có <kbd> chứa phím chữ hoa và <span class="pad-name"> chứa tên
+      âm.
+  - Section "Beat recorder" có #rec-start, #rec-stop (disabled), #rec-play
+    (disabled) và output#rec-status với role="status", aria-live="polite", nội
+    dung ban đầu "Ready.".
+
+  Tự kiểm tra:
+  - Pattern onclick|style=|<script> trả về 0 kết quả.
+  - Đếm được đúng 8 data-sound và đúng 1 <h1.
+  - Chưa mở trang trên Live Server, nên chưa kiểm tra Console. Console được kỳ
+    vọng có đúng một 404 cho js/main.js cho tới Step 3.
+
+  Lưu ý:
+  - Tôi chọn tên hiển thị cho 8 pad: Kick, Snare, Hi-hat, Open hat, Clap, Tom
+    high, Tom low, Crash. Đoạn chữ trong footer ("All sounds are synthesized
+    locally. No external files are used.") cũng do tôi viết, vì bạn chỉ yêu cầu
+    có footer. Bạn muốn đổi thì nói.
+  - Skip-link dùng class skip-link và các pad dùng class pad-name. Hai class này
+    chưa có CSS; việc đó thuộc S2/S3.
+  - Git chỉ cảnh báo LF sẽ chuyển thành CRLF trên Windows, không ảnh hưởng nội
+    dung.
+
+> <ide_selection>The user selected the lines 28 to 28 from
+  c:\Users\USER\Documents\HomeWork_WEBDEV\hw2-drum-kit\index.html:
+  data-sound
+
+  This may or may not be related to the current task.</ide_selection>
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục S2). Chỉ làm task S2.
+  Không sửa HTML, không viết layout, không viết JS.
+
+  Phạm vi file được sửa: css/reset.css và css/tokens.css (hiện là stub, ghi
+  đè).
+
+  reset.css: reset hiện đại (box-sizing border-box, margin 0, padding 0), html
+  color-scheme dark, body font-family theo token, line-height 1.6, min-height
+  100vh, button/input font inherit, .visually-hidden nếu HTML dùng, @media
+  (prefers-reduced-motion: reduce) tắt animation/transition.
+
+  tokens.css: một theme tối duy nhất theo phong cách "studio công nghệ": nền
+  navy rất tối, bề mặt pad tối hơn một chút, accent cyan và magenta phát sáng.
+  Token tối thiểu: --bg, --surface, --surface-active, --text, --text-muted,
+  --border, --accent, --accent-2, --on-accent, --focus-ring, --glow,
+  --font-sans (system-ui), --font-mono, thang cỡ chữ, --space-1..--space-8,
+  --radius-*, --transition-fast (100ms). Toàn bộ màu CHỈ khai báo trong file
+  này. Tương phản chữ >= 4.5:1, viền/focus >= 3:1; tính tỉ lệ bằng lệnh chạy
+  một lần (không lưu file) và báo bảng bằng tiếng Việt.
+
+  Tự kiểm tra: Select-String -Path css\reset.css -Pattern '#[0-9a-fA-F]{3,8}'
+  phải rỗng.
+
+  Commit:
+  git add css/reset.css css/tokens.css
+  git commit -m "feat(css): design tokens & box-sizing reset"
+
+  Không push.
+
+● Write(css\tokens.css)  ⎿  Added 43 lines, removed 1 line
+       1 -/* stub: filled in S2 */                                       
+       1 +/* Design tokens: the only file that declares color values. Sin
+         +gle dark studio theme. */                                      
+       2 +:root {                                                        
+       3 +  /* Colors */                                                 
+       4 +  --bg: #0c1633;                                               
+       5 +  --surface: #080f26;                                          
+       6 +  --surface-active: #16285a;                                   
+       7 +  --text: #e8eefc;                                             
+       8 +  --text-muted: #a3b3d9;                                       
+       9 +  --border: #4a6099;                                           
+      10 +  --accent: #22e0ff;                                           
+      11 +  --accent-2: #ff4df0;                                         
+      12 +  --on-accent: #04101f;                                        
+      13 +  --focus-ring: #ffd84d;                                       
+      14 +  --glow: rgb(34 224 255 / 55%);                               
+      15 +                                                               
+      16 +  /* Typography */                                             
+      17 +  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sa
+         +ns-serif;                                                      
+      18 +  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consol
+         +as, monospace;                                                 
+      19 +  --font-size-sm: 0.875rem;                                    
+      20 +  --font-size-md: 1rem;                                        
+      21 +  --font-size-lg: 1.25rem;                                     
+      22 +  --font-size-xl: 1.75rem;                                     
+      23 +  --font-size-2xl: 2.25rem;                                    
+      24 +                                                               
+      25 +  /* Spacing */                                                
+      26 +  --space-1: 0.25rem;                                          
+      27 +  --space-2: 0.5rem;                                           
+      28 +  --space-3: 0.75rem;                                          
+      29 +  --space-4: 1rem;                                             
+      30 +  --space-5: 1.5rem;                                           
+      31 +  --space-6: 2rem;                                             
+      32 +  --space-7: 3rem;                                             
+      33 +  --space-8: 4rem;                                             
+      34 +                                                               
+      35 +  /* Radii */                                                  
+      36 +  --radius-sm: 0.25rem;                                        
+      37 +  --radius-md: 0.75rem;                                        
+      38 +  --radius-lg: 1.25rem;                                        
+      39 +  --radius-full: 999px;                                        
+      40 +                                                               
+      41 +  /* Motion */                                                 
+      42 +  --transition-fast: 100ms;                                    
+      43 +}                                                              
+
+● Write(css\reset.css)
+  ⎿  Added 41 lines, removed 1 line
+       1 -/* stub: filled in S2 */                                       
+       1 +*,                                                             
+       2 +*::before,                                                     
+       3 +*::after {                                                     
+       4 +  box-sizing: border-box;                                      
+       5 +  margin: 0;                                                   
+       6 +  padding: 0;                                                  
+       7 +}                                                              
+       8 +                                                               
+       9 +html {                                                         
+      10 +  color-scheme: dark;                                          
+      11 +}                                                              
+      12 +                                                               
+      13 +body {                                                         
+      14 +  min-height: 100vh;                                           
+      15 +  background-color: var(--bg);                                 
+      16 +  color: var(--text);                                          
+      17 +  font-family: var(--font-sans);                               
+      18 +  font-size: var(--font-size-md);                              
+      19 +  line-height: 1.6;                                            
+      20 +}                                                              
+      21 +                                                               
+      22 +button,                                                        
+      23 +input,                                                         
+      24 +select,                                                        
+      25 +textarea {                                                     
+      26 +  font: inherit;                                               
+      27 +  color: inherit;                                              
+      28 +}                                                              
+      29 +                                                               
+      30 +ul {                                                           
+      31 +  list-style: none;                                            
+      32 +}                                                              
+      33 +                                                               
+      34 +@media (prefers-reduced-motion: reduce) {                      
+      35 +  *,                                                           
+      36 +  *::before,                                                   
+      37 +  *::after {                                                   
+      38 +    animation: none !important;                                
+      39 +    transition: none !important;                               
+      40 +  }                                                            
+      41 +}                                                              
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Viền ban đầu chỉ đạt 2,91:1 trên nền, chưa đủ 3:1. Tôi đổi sang #5a76b8 (đạt
+  ≥3:1 trên cả 3 bề mặt).
+
+● Update(css\tokens.css)
+  ⎿  Added 1 line, removed 1 line
+       6    --surface-active: #16285a;
+       7    --text: #e8eefc;
+       8    --text-muted: #a3b3d9;
+       9 -  --border: #4a6099;                                           
+       9 +  --border: #5a76b8;                                           
+      10    --accent: #22e0ff;
+      11    --accent-2: #ff4df0;
+      12    --on-accent: #04101f;
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Task S2 xong. Commit 5b91f5f (feat(css): design tokens & box-sizing reset),
+  chỉ gồm css/reset.css và css/tokens.css. Chưa push. Tôi không sửa HTML, layout
+  hay JS.
+
+  Tương phản. Tôi tính bằng một lệnh Python chạy một lần, không lưu file. Màu
+  viền (--border) lúc đầu chỉ đạt 2,91:1 trên nền, nên tôi đổi từ #4a6099 sang
+  #5a76b8 rồi tính lại. Bảng dưới là kết quả sau khi đổi.
+
+  ┌───────────────────────────────────────────┬─────────────────┬───────────┐
+  │                  Cặp màu                  │      Tỉ lệ      │  Yêu cầu  │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --text trên --bg / --surface /            │ 15,33 / 16,33 / │ ≥ 4,5     │
+  │ --surface-active                          │  12,16          │ (đạt)     │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --text-muted trên --bg / --surface /      │ 8,49 / 9,04 /   │ ≥ 4,5     │
+  │ --surface-active                          │ 6,74            │ (đạt)     │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --accent trên --bg / --surface            │ 11,18 / 11,90   │ ≥ 4,5     │
+  │                                           │                 │ (đạt)     │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --accent-2 trên --bg / --surface          │ 6,43 / 6,84     │ ≥ 4,5     │
+  │                                           │                 │ (đạt)     │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --on-accent trên --accent / --accent-2    │ 11,99 / 6,89    │ ≥ 4,5     │
+  │                                           │                 │ (đạt)     │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --border trên --bg / --surface /          │ 4,00 / 4,26 /   │ ≥ 3 (đạt) │
+  │ --surface-active                          │ 3,18            │           │
+  ├───────────────────────────────────────────┼─────────────────┼───────────┤
+  │ --focus-ring trên --bg / --surface /      │ 12,89 / 13,72 / │ ≥ 3 (đạt) │
+  │ --surface-active                          │  10,22          │           │
+  └───────────────────────────────────────────┴─────────────────┴───────────┘
+
+  Tỉ lệ viền sau khi đổi là 4,00 / 4,26 / 3,18, tôi lấy từ lần tính thử giá trị
+  mới.
+
+  Tự kiểm tra: Select-String tìm mã hex trong reset.css trả về 0 kết quả. Màu
+  chỉ khai báo trong tokens.css. Tôi chưa mở trang trên Live Server, nên chưa
+  nhìn kết quả thực tế.
+
+  Điểm cần bạn biết:
+  - Dark theme. Nền --bg là navy #0c1633 và --surface là #080f26, tối hơn nền
+    một chút như bạn yêu cầu. Accent cyan #22e0ff, accent-2 magenta #ff4df0.
+  - Focus ring. Tôi chọn màu vàng #ffd84d thay vì cyan để nổi bật trên mọi bề
+    mặt, và để tách khỏi màu viền pad khi được kích hoạt.
+  - Token glow. Dùng rgb(34 224 255 / 55%), là giá trị màu nên nằm trong file
+    tokens.
+  - .visually-hidden. Tôi không thêm vì index.html không dùng class này.
+  - .skip-link và .pad-name. Hai class này có trong HTML nhưng chưa có style, sẽ
+    xử lý ở S3.
+  - ul { list-style: none; }. Tôi thêm vào reset vì HTML dùng ul.pad-grid. Ngoài
+    danh sách bạn nêu, tôi còn thêm select, textarea vào dòng font: inherit của
+    form control.
+  - Git. Chỉ cảnh báo LF sẽ chuyển thành CRLF trên Windows, không ảnh hưởng nội
+    dung.
+
+> <ide_opened_file>The user opened the file
+  c:\Users\USER\Documents\HomeWork_WEBDEV\hw2-drum-kit\css\tokens.css in the
+  IDE. This may or may not be related to the current task.</ide_opened_file>
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục S3). Chỉ làm task S3.
+  Không sửa HTML, không viết JS.
+
+  Phạm vi file được sửa: css/layout.css (hiện là stub, ghi đè). Chỉ dùng token
+  qua var(--...), không có mã màu cứng.
+
+  Yêu cầu (mobile-first, thiết kế cho 375px trước):
+  - Skip-link: ẩn ngoài màn hình, hiện khi :focus.
+  - Header/main/footer: padding-inline theo token, max-inline-size ~60rem,
+  margin-inline auto.
+  - ul.pad-grid: display grid, list-style none, gap, grid-template-columns:
+  repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr)) để ở 375px có khoảng 2 cột
+  và ở desktop tự tăng cột.
+  - button.drum-pad: chiếm toàn ô, aspect-ratio 1 / 1 (hoặc min-height 6rem),
+  nền --surface, viền --border, bo góc, chữ lớn dễ đọc; kbd to ở giữa,
+  .pad-name nhỏ bên dưới; cursor pointer; chống chọn văn bản (user-select none)
+  và touch-action: manipulation.
+  - Trạng thái :hover, :active, :focus-visible (outline 3px --focus-ring,
+  offset), và trạng thái .drum-pad.active (class mà JS sẽ thêm trong 100ms):
+  nền --surface-active, viền --accent, bóng phát sáng --glow, scale nhẹ
+  (transition theo --transition-fast, tắt khi prefers-reduced-motion).
+  - Khu Beat recorder: flex wrap với gap cho 3 nút; nút có min-height 44px;
+  trạng thái :disabled mờ nhưng vẫn đạt contrast hợp lý; output#rec-status hiển
+  thị rõ, font mono.
+  - Không gây cuộn ngang ở 375px.
+
+  Tự kiểm tra: Select-String -Path css\layout.css -Pattern '#[0-9a-fA-F]{3,8}'
+  phải rỗng.
+
+  Commit:
+  git add css/layout.css
+  git commit -m "feat(css): responsive pad grid"
+
+  Không push.
+
+● Write(css\layout.css)
+  ⎿  Added 199 lines, removed 1 line
+        1 -/* stub: filled in S3 */                                      
+        1 +/* Page layout, pad grid and recorder controls. Mobile-first (
+          +375px base). */                                               
+        2 +                                                              
+        3 +.skip-link {                                                  
+        4 +  position: absolute;                                         
+        5 +  inset-block-start: var(--space-2);                          
+        6 +  inset-inline-start: var(--space-2);                         
+        7 +  padding: var(--space-2) var(--space-4);                     
+        8 +  border-radius: var(--radius-sm);                            
+        9 +  background-color: var(--accent);                            
+       10 +  color: var(--on-accent);                                    
+       11 +  font-weight: 700;                                           
+       12 +  transform: translateY(-300%);                               
+       13 +}                                                             
+       14 +                                                              
+       15 +.skip-link:focus {                                            
+       16 +  transform: translateY(0);                                   
+       17 +  outline: 3px solid var(--focus-ring);                       
+       18 +  outline-offset: 2px;                                        
+       19 +}                                                             
+       20 +                                                              
+       21 +body > header,                                                
+       22 +body > main,                                                  
+       23 +body > footer {                                               
+       24 +  max-inline-size: 60rem;                                     
+       25 +  margin-inline: auto;                                        
+       26 +  padding-inline: var(--space-4);                             
+       27 +}                                                             
+       28 +                                                              
+       29 +body > header {                                               
+       30 +  padding-block: var(--space-6) var(--space-4);               
+       31 +}                                                             
+       32 +                                                              
+       33 +body > header h1 {                                            
+       34 +  font-size: var(--font-size-xl);                             
+       35 +  line-height: 1.2;                                           
+       36 +  color: var(--accent);                                       
+       37 +  text-shadow: 0 0 1rem var(--glow);                          
+       38 +}                                                             
+       39 +                                                              
+       40 +body > header p {                                             
+       41 +  margin-block-start: var(--space-2);                         
+       42 +  color: var(--text-muted);                                   
+       43 +}                                                             
+       44 +                                                              
+       45 +body > main {                                                 
+       46 +  display: grid;                                              
+       47 +  gap: var(--space-6);                                        
+       48 +  padding-block: var(--space-4);                              
+       49 +}                                                             
+       50 +                                                              
+       51 +body > main:focus {                                           
+       52 +  outline: none;                                              
+       53 +}                                                             
+       54 +                                                              
+       55 +body > footer {                                               
+       56 +  padding-block: var(--space-6);                              
+       57 +  color: var(--text-muted);                                   
+       58 +  font-size: var(--font-size-sm);                             
+       59 +}                                                             
+       60 +                                                              
+       61 +main h2 {                                                     
+       62 +  margin-block-end: var(--space-3);                           
+       63 +  font-size: var(--font-size-lg);                             
+       64 +  line-height: 1.3;                                           
+       65 +}                                                             
+       66 +                                                              
+       67 +/* Pad grid: about 2 columns at 375px, more columns as the vie
+          +wport grows. */                                               
+       68 +.pad-grid {                                                   
+       69 +  display: grid;                                              
+       70 +  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5
+          +rem), 1fr));                                                  
+       71 +  gap: var(--space-3);                                        
+       72 +}                                                             
+       73 +                                                              
+       74 +.drum-pad {                                                   
+       75 +  display: flex;                                              
+       76 +  flex-direction: column;                                     
+       77 +  align-items: center;                                        
+       78 +  justify-content: center;                                    
+       79 +  gap: var(--space-1);                                        
+       80 +  inline-size: 100%;                                          
+       81 +  aspect-ratio: 1 / 1;                                        
+       82 +  min-block-size: 6rem;                                       
+       83 +  border: 2px solid var(--border);                            
+       84 +  border-radius: var(--radius-md);                            
+       85 +  background-color: var(--surface);                           
+       86 +  color: var(--text);                                         
+       87 +  cursor: pointer;                                            
+       88 +  user-select: none;                                          
+       89 +  -webkit-user-select: none;                                  
+       90 +  touch-action: manipulation;                                 
+       91 +  transition:                                                 
+       92 +    transform var(--transition-fast),                         
+       93 +    background-color var(--transition-fast),                  
+       94 +    border-color var(--transition-fast),                      
+       95 +    box-shadow var(--transition-fast);                        
+       96 +}                                                             
+       97 +                                                              
+       98 +.drum-pad kbd {                                               
+       99 +  font-family: var(--font-mono);                              
+      100 +  font-size: var(--font-size-2xl);                            
+      101 +  font-weight: 700;                                           
+      102 +  line-height: 1;                                             
+      103 +  color: var(--accent);                                       
+      104 +}                                                             
+      105 +                                                              
+      106 +.drum-pad .pad-name {                                         
+      107 +  font-size: var(--font-size-sm);                             
+      108 +  color: var(--text-muted);                                   
+      109 +}                                                             
+      110 +                                                              
+      111 +.drum-pad:hover {                                             
+      112 +  border-color: var(--accent);                                
+      113 +}                                                             
+      114 +                                                              
+      115 +.drum-pad:active,                                             
+      116 +.drum-pad.active {                                            
+      117 +  border-color: var(--accent);                                
+      118 +  background-color: var(--surface-active);                    
+      119 +  box-shadow: 0 0 1.25rem var(--glow);                        
+      120 +  transform: scale(0.96);                                     
+      121 +}                                                             
+      122 +                                                              
+      123 +.drum-pad:focus-visible {                                     
+      124 +  outline: 3px solid var(--focus-ring);                       
+      125 +  outline-offset: 3px;                                        
+      126 +}                                                             
+      127 +                                                              
+      128 +/* Beat recorder */                                           
+      129 +[aria-labelledby="recorder-heading"] {                        
+      130 +  display: flex;                                              
+      131 +  flex-wrap: wrap;                                            
+      132 +  align-items: center;                                        
+      133 +  gap: var(--space-3);                                        
+      134 +}                                                             
+      135 +                                                              
+      136 +[aria-labelledby="recorder-heading"] h2,                      
+      137 +#rec-status {                                                 
+      138 +  flex-basis: 100%;                                           
+      139 +}                                                             
+      140 +                                                              
+      141 +[aria-labelledby="recorder-heading"] h2 {                     
+      142 +  margin-block-end: 0;                                        
+      143 +}                                                             
+      144 +                                                              
+      145 +#rec-start,                                                   
+      146 +#rec-stop,                                                    
+      147 +#rec-play {                                                   
+      148 +  min-block-size: 44px;                                       
+      149 +  min-inline-size: 44px;                                      
+      150 +  padding-inline: var(--space-5);                             
+      151 +  border: 2px solid var(--border);                            
+      152 +  border-radius: var(--radius-full);                          
+      153 +  background-color: var(--surface);                           
+      154 +  color: var(--text);                                         
+      155 +  font-weight: 600;                                           
+      156 +  cursor: pointer;                                            
+      157 +  touch-action: manipulation;                                 
+      158 +  transition:                                                 
+      159 +    background-color var(--transition-fast),                  
+      160 +    border-color var(--transition-fast);                      
+      161 +}                                                             
+      162 +                                                              
+      163 +#rec-start:hover:not(:disabled),                              
+      164 +#rec-stop:hover:not(:disabled),                               
+      165 +#rec-play:hover:not(:disabled) {                              
+      166 +  border-color: var(--accent-2);                              
+      167 +  background-color: var(--surface-active);                    
+      168 +}                                                             
+      169 +                                                              
+      170 +#rec-start:focus-visible,                                     
+      171 +#rec-stop:focus-visible,                                      
+      172 +#rec-play:focus-visible {                                     
+      173 +  outline: 3px solid var(--focus-ring);                       
+      174 +  outline-offset: 3px;                                        
+      175 +}                                                             
+      176 +                                                              
+      177 +#rec-start:disabled,                                          
+      178 +#rec-stop:disabled,                                           
+      179 +#rec-play:disabled {                                          
+      180 +  border-style: dashed;                                       
+      181 +  color: var(--text-muted);                                   
+      182 +  opacity: 0.7;                                               
+      183 +  cursor: not-allowed;                                        
+      184 +}                                                             
+      185 +                                                              
+      186 +#rec-status {                                                 
+      187 +  padding: var(--space-3) var(--space-4);                     
+      188 +  border-inline-start: 4px solid var(--accent-2);             
+      189 +  border-radius: var(--radius-sm);                            
+      190 +  background-color: var(--surface);                           
+      191 +  font-family: var(--font-mono);                              
+      192 +  font-size: var(--font-size-md);                             
+      193 +}                                                             
+      194 +                                                              
+      195 +@media (min-width: 48rem) {                                   
+      196 +  body > header h1 {                                          
+      197 +    font-size: var(--font-size-2xl);                          
+      198 +  }                                                           
+      199 +}                                                             
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Task S3 xong. Commit 83cbbe3 (feat(css): responsive pad grid), chỉ có
+  css/layout.css. Chưa push. Tôi không sửa HTML hay JS.
+
+  Tự kiểm tra: tìm mã hex trong layout.css trả về 0 kết quả, toàn bộ màu đi qua
+  var(--...). Tôi chưa mở trang trên Live Server, nên chưa nhìn kết quả thực tế.
+  Việc xem số cột ở 375px và có cuộn ngang hay không còn để bạn làm.
+
+  Những gì đã viết:
+  - Skip-link: nằm ngoài màn hình, hiện ra khi :focus kèm outline.
+  - Bố cục trang: header, main và footer có max-inline-size: 60rem, canh giữa và
+    padding-inline theo token.
+  - Lưới pad: ul.pad-grid dùng repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr))
+    với gap.
+  - Pad: button.drum-pad có aspect-ratio: 1 / 1, min-block-size: 6rem, nền
+    --surface, viền --border và bo góc.
+    - kbd to, dùng font mono, màu accent, nằm giữa pad.
+    - .pad-name nhỏ bên dưới.
+    - Có user-select: none và touch-action: manipulation.
+  - Trạng thái pad:
+    - :hover đổi viền sang accent.
+    - :active và .active dùng nền --surface-active, viền accent, bóng --glow và
+      scale 0,96.
+    - :focus-visible có outline 3px --focus-ring và offset.
+    - Transition dùng --transition-fast.
+  - Beat recorder: vùng này là flex wrap với gap.
+    - 3 nút có min-block-size: 44px.
+    - Nút :disabled dùng viền nét đứt, chữ --text-muted và opacity: 0.7.
+    - output#rec-status dùng font mono, có vạch accent-2 bên trái.
+
+  Điểm cần bạn biết:
+  - Reduced motion: tôi không lặp lại rule prefers-reduced-motion trong
+    layout.css. reset.css đã tắt mọi animation và transition ở S2. Khi bật chế
+    độ này, pad vẫn đổi trạng thái và scale nhưng ngay lập tức, không có chuyển
+    động.
+  - Tỉ lệ tương phản nút disabled: tôi chưa tính, chỉ ước lượng bằng tay (khoảng
+    4,9:1 so với nền). Nút disabled thường được miễn yêu cầu này.
+  - Selector của vùng recorder: HTML không có class cho vùng này, nên tôi chọn
+    bằng [aria-labelledby="recorder-heading"] và id của từng nút. Nếu sau này
+    đổi aria-labelledby, selector sẽ hỏng.
+  - Phần thêm ngoài danh sách bạn nêu: h1 có màu accent kèm bóng glow, và đổi cỡ
+    chữ theo một breakpoint min-width: 48rem.
+  - Git: chỉ cảnh báo LF sẽ chuyển thành CRLF trên Windows, không ảnh hưởng nội
+    dung.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục Step 2 và Module
+  contracts). Chỉ làm Step 2: audio engine độc lập. Không viết keyboard,
+  recorder hay wiring; không sửa HTML/CSS.
+
+  Phạm vi file được tạo: js/audio-engine.js (file mới, chưa tồn tại). File là
+  ES module, KHÔNG truy cập DOM, KHÔNG biết gì về phím hay giao diện.
+
+  Chữ ký bắt buộc (đúng contract):
+  - export async function resumeAudio()  : tạo AudioContext lười (lần gọi đầu)
+  và gọi resume() nếu đang suspended (chính sách autoplay của trình duyệt); trả
+  về Promise.
+  - export async function loadSample(url) : dùng chung một hàm nội bộ
+  getContext() (tạo AudioContext lười, cùng context với resumeAudio và play) để
+  có thể tải trước sample ngay khi trang mở, trước khi người dùng click;
+  fetch(url) -> arrayBuffer -> decodeAudioData; cache kết quả trong Map theo
+  url; nếu cùng url đang tải thì dùng chung promise (không tải 2 lần); lỗi
+  mạng/giải mã thì console.warn một lần ngắn gọn và trả về false, thành công
+  trả về true.
+  - export function play(url, options = {}) : nếu chưa có buffer hoặc context
+  thì trả về false và KHÔNG throw. Ngược lại tạo MỚI một AudioBufferSourceNode
+  cho mỗi lần phát (đa âm: nhiều âm chồng lên nhau, không cắt âm trước), nối
+  qua GainNode volume (options.volume mặc định 1) rồi tới một master GainNode
+  (gain ~0.9) có DynamicsCompressorNode để tránh méo khi nhiều âm cùng lúc;
+  theo dõi các source đang chạy trong một Set và xóa khi sự kiện ended; trả về
+  true.
+  - export function stopAll() : stop() mọi source đang chạy, xóa Set, bỏ qua
+  lỗi InvalidStateError nếu source đã dừng.
+
+  Chỉ dùng const/let, không var, không biến toàn cục trên window, không
+  console.log (chỉ console.warn cho lỗi tải). Có JSDoc ngắn cho từng hàm
+  export. Code sạch, không dead code.
+
+  Tự kiểm tra: Select-String -Path js\audio-engine.js -Pattern
+  '\bvar\b|document\.|window\.|innerHTML|console\.log' phải rỗng.
+
+  Hướng dẫn tôi cách kiểm thử riêng engine trong Console của DevTools bằng
+  dynamic import (ví dụ: const e = await import('/js/audio-engine.js'); await
+  e.resumeAudio(); await e.loadSample('sounds/kick.wav');
+  e.play('sounds/kick.wav'); ...) và giải thích tôi phải click vào trang trước
+  khi nghe được tiếng.
+
+  Commit:
+  git add js/audio-engine.js
+  git commit -m "feat(js): polyphonic audio engine"
+
+  Không push.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(js\audio-engine.js)
+  ⎿  Wrote 139 lines to js\audio-engine.js
+       1 const MASTER_GAIN = 0.9;
+       2
+       3 const buffers = new Map();
+       4 const pendingLoads = new Map();
+       5 const activeSources = new Set();
+       6
+       7 let context = null;
+       8 let masterGain = null;
+       9
+      10 /**
+     … +136 lines (ctrl+o to expand)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Step 2 xong. Commit c076ad2 (feat(js): polyphonic audio engine), chỉ có
+  js/audio-engine.js (139 dòng). Chưa push. Tôi không viết keyboard, recorder
+  hay wiring, và không sửa HTML/CSS.
+
+  Tự kiểm tra: pattern \bvar\b|document\.|window\.|innerHTML|console\.log trả về
+  0 kết quả, và node --check không báo lỗi cú pháp. Tôi chưa chạy trong trình
+  duyệt, nên chưa kiểm tra phần phát âm thanh thực tế. Bạn hãy chạy các bước
+  kiểm thử bên dưới.
+
+  Engine làm gì:
+  - getContext(): là hàm nội bộ, tạo AudioContext một lần duy nhất và dùng chung
+    cho resumeAudio, loadSample và play. Chuỗi âm thanh là: master gain 0,9 →
+    compressor → loa. Hàm trả về null nếu Web Audio không có.
+  - resumeAudio(): gọi resume() khi context đang suspended.
+  - loadSample(url): fetch → arrayBuffer → decodeAudioData, lưu cache theo url.
+    - Nếu cùng url đang tải thì dùng chung một promise.
+    - Lỗi thì console.warn một dòng và trả về false.
+    - Thành công trả về true.
+  - play(url, options = {}): mỗi lần gọi tạo một AudioBufferSourceNode mới nối
+    qua gain riêng (options.volume, mặc định 1) rồi tới master.
+    - Source được theo dõi trong một Set. Khi sự kiện ended chạy, source bị xóa
+      khỏi Set và ngắt kết nối.
+    - Chưa có buffer hoặc context thì trả về false; có lỗi bất ngờ cũng trả về
+      false, không throw.
+  - stopAll(): dừng mọi source, xóa Set và bỏ qua InvalidStateError nếu source
+    đã dừng. Lỗi khác sẽ được ném lại.
+
+  Cách kiểm thử trong DevTools Console
+
+  Mở http://localhost:5500 bằng Live Server rồi click vào trang một lần. Trình
+  duyệt chặn âm thanh cho tới khi người dùng thao tác trên trang (chính sách
+  autoplay), và AudioContext sẽ ở trạng thái suspended. Khi gõ lệnh trong
+  Console mà chưa click trang, bạn sẽ không nghe thấy gì dù play trả về true.
+
+  const e = await import('/js/audio-engine.js');
+  await e.resumeAudio();
+  await e.loadSample('sounds/kick.wav');
+  await e.loadSample('sounds/crash.wav');
+  e.play('sounds/kick.wav');                 // true, nghe tiếng kick
+  e.play('sounds/kick.wav'); e.play('sounds/kick.wav');
+  e.play('sounds/crash.wav');  // nhiều âm chồng lên nhau
+  e.play('sounds/crash.wav', { volume: 0.3 });  // nhỏ hơn
+  e.stopAll();                               // dừng ngay mọi âm đang vang
+  e.play('sounds/khong-co.wav');             // false, không throw
+  await e.loadSample('sounds/khong-co.wav'); // false + một dòng warning
+
+  Kỳ vọng thêm:
+  - Gọi play trước loadSample thì trả về false.
+  - Gọi loadSample hai lần cho cùng url, ở tab Network chỉ thấy một request.
+  - Nếu resumeAudio() được gọi mà chưa từng click trang, await e.resumeAudio()
+    có thể treo cho tới khi bạn click.
+
+  Trang vẫn có lỗi 404 cho js/main.js cho tới Step 3, đúng như đã nêu.
+
+  Lưu ý: tôi dùng catch { không có biến cho các trường hợp bỏ qua lỗi, và dùng
+  AudioContext trực tiếp, không viết window.AudioContext. Git chỉ cảnh báo LF sẽ
+  chuyển thành CRLF, không ảnh hưởng nội dung.
+
+> <ide_opened_file>The user opened the file
+  c:\Users\USER\Documents\HomeWork_WEBDEV\hw2-drum-kit\js\audio-engine.js in
+  the IDE. This may or may not be related to the current
+  task.</ide_opened_file>
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục Step 3). Chỉ làm Step 3:
+  listener bàn phím và nối dây (wiring). Chưa làm recorder; không sửa HTML/CSS;
+  không sửa audio-engine.js.
+
+  Phạm vi file được tạo: js/keyboard.js và js/main.js (2 file mới, chưa tồn
+  tại).
+
+  js/keyboard.js (ES module, KHÔNG biết gì về audio hay DOM của pad):
+  - export function bindKeyboard(onKey) đăng ký
+  window.addEventListener('keydown', handler) và trả về hàm unbind
+  (removeEventListener).
+  - handler bỏ qua khi: event.repeat === true (chống lặp âm khi giữ phím),
+  event.ctrlKey/altKey/metaKey, event.isComposing, hoặc event.target là
+  input/textarea/select/contenteditable. Dùng event.key (KHÔNG dùng keyCode hay
+  keypress). Gọi onKey(event.key.toLowerCase()) và chỉ cho phím một ký tự hoặc
+  phím có tên (ví dụ ' ' cho Space) - nhưng KHÔNG preventDefault bừa bãi (chỉ
+  khi phím đã được xử lý).
+
+  js/main.js (chỉ nối các module):
+  - import { resumeAudio, loadSample, play } from './audio-engine.js' và import
+  { bindKeyboard } from './keyboard.js'.
+  - Hai hằng số ở đầu file: const SOUND_ATTR = 'data-sound'; const KEY_ATTR =
+  'data-key'; ĐÂY LÀ NƠI DUY NHẤT trong JS biết tên các thuộc tính.
+  - Tìm mọi pad bằng document.querySelectorAll([${SOUND_ATTR}]); tải trước toàn
+  bộ sample bằng loadSample.
+  - Hàm findPad(key):
+  document.querySelector([${KEY_ATTR}="${CSS.escape(key)}"]).
+  - Hàm triggerPad(pad): lấy url bằng pad.getAttribute(SOUND_ATTR); gọi
+  play(url); thêm class "active" vào pad, tự gỡ sau 100ms bằng setTimeout (nếu
+  pad bị kích hoạt lại trong lúc chờ thì clearTimeout timer cũ, lưu timer trong
+  WeakMap hoặc Map).
+  - bindKeyboard((key) => { const pad = findPad(key); if (pad) triggerPad(pad);
+  }).
+  - Click chuột/chạm: dùng event delegation trên ul.pad-grid (một listener),
+  dùng event.target.closest('.drum-pad').
+  - Gọi resumeAudio() ở lần tương tác đầu tiên (pointerdown hoặc keydown, dùng
+  { once: true }) để vượt chính sách autoplay.
+  - Không có switch/case theo phím; không innerHTML; không console.log;
+  const/let; không var.
+
+  Tự kiểm tra: Select-String -Path js\*.js -Pattern
+  '\bvar\b|keyCode|keypress|innerHTML|console\.log|switch' phải rỗng.
+
+  Commit chỉ 2 file:
+  git add js/keyboard.js js/main.js
+  git commit -m "feat(js): keydown listener with repeat throttling"
+
+  Không push.
+
+● Write(js\keyboard.js)
+  ⎿  Wrote 31 lines to js\keyboard.js
+       1 const EDITABLE_SELECTOR = 'input, textarea, select, [contentedit
+       2
+       3 /**
+         es.
+         position
+       6  * and typing inside form fields. Knows nothing about audio or p
+       7  * @param {(key: string) => (boolean | void)} onKey Called with
+         the lowercase key.
+          is prevented.
+      10  */
+     … +26 lines (ctrl+o to expand)
+
+● Write(js\main.js)
+  ⎿  Wrote 55 lines to js\main.js
+       1 import { resumeAudio, loadSample, play } from './audio-engine.js
+         ';
+       2 import { bindKeyboard } from './keyboard.js';
+       3
+       4 const SOUND_ATTR = 'data-sound';
+       6
+       7 const ACTIVE_CLASS = 'active';
+       8 const ACTIVE_MS = 100;
+       9
+      10 const padGrid = document.querySelector('.pad-grid');
+     … +46 lines (ctrl+o to expand)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Step 3 xong. Commit 849c149 (feat(js): keydown listener with repeat
+  throttling), gồm js/keyboard.js và js/main.js (86 dòng). Chưa push. Tôi không
+  làm recorder và không sửa HTML, CSS hay audio-engine.js.
+
+  Tự kiểm tra: pattern \bvar\b|keyCode|keypress|innerHTML|console\.log|switch
+  trên js\*.js trả về 0 kết quả, và node --check không báo lỗi cú pháp. Tôi chưa
+  mở trang trên Live Server, nên chưa nghe được tiếng. Lỗi 404 cho js/main.js
+  giờ sẽ biến mất.
+
+  js/keyboard.js
+  - bindKeyboard(onKey) đăng ký một listener keydown trên window và trả về hàm
+    unbind.
+  - Handler bỏ qua event.repeat, isComposing, Ctrl/Alt/Meta, và sự kiện có
+    target nằm trong input, textarea, select, [contenteditable].
+  - Handler gọi onKey(event.key.toLowerCase()).
+  - File này không biết gì về audio hay pad.
+
+  js/main.js
+  - Hai hằng số SOUND_ATTR và KEY_ATTR ở đầu file là nơi duy nhất biết tên thuộc
+    tính.
+  - Tải trước mọi sample có data-sound.
+  - findPad dùng CSS.escape. triggerPad gọi play(url) rồi thêm class active và
+    gỡ sau 100ms. Timer lưu trong Map theo pad; nếu pad bị kích hoạt lại thì
+    clearTimeout timer cũ.
+  - Một listener click duy nhất trên .pad-grid, dùng closest('.drum-pad').
+  - resumeAudio chạy ở lần pointerdown hoặc keydown đầu tiên, dùng { once: true
+    }.
+
+  Quyết định cần bạn xem:
+  - preventDefault. Bạn yêu cầu chỉ gọi khi phím đã được xử lý, mà keyboard.js
+    không biết phím nào đã xử lý. Vì vậy onKey có thể trả về true: khi đó
+    keyboard.js gọi preventDefault(). main.js trả về true chỉ khi tìm thấy pad.
+    Chữ ký hàm vẫn giữ nguyên.
+  - Bộ lọc phím. Tôi không lọc theo "một ký tự hoặc phím có tên". Mọi phím đều
+    được gửi cho onKey ở dạng chữ thường, kể cả Shift, Tab hay Space. main.js bỏ
+    qua phím không có pad. Cách này để Test B (Space → stopAll) chỉ cần sửa
+    main.js.
+  - Click thay vì pointerdown. Tôi dùng click cho các pad, nên cả chuột, chạm và
+    Enter/Space khi pad đang focus đều phát âm. Nhược điểm là âm phát lúc nhả
+    chuột, không phải lúc nhấn.
+  - Cảnh báo Console. Sample được tải trước khi người dùng thao tác, nên Chrome
+    có thể in cảnh báo The AudioContext was not allowed to start cho tới khi bạn
+    click hoặc bấm phím. Đây là chính sách autoplay của trình duyệt, không phải
+    lỗi của dự án.
+  - Listener lúc rời trang. Các listener cấp trang (click, pointerdown, keydown)
+    tồn tại suốt vòng đời trang và không bị gỡ lúc rời trang. Hai listener {
+    once: true } tự gỡ sau lần chạy đầu. Tôi không giữ hàm unbind mà
+    bindKeyboard trả về.
+
+  Cách kiểm thử:
+  - Bấm lần lượt A, S, D, F, G, H, J, K và nghe đúng 8 âm.
+  - Giữ một phím: chỉ kêu một lần.
+  - Bấm Ctrl+A: không kêu.
+  - Click hoặc chạm từng pad.
+  - Quan sát pad sáng lên khoảng 100ms.
+  - Bấm A rất nhanh nhiều lần: các âm chồng lên nhau.
+
+  Git chỉ cảnh báo LF sẽ chuyển thành CRLF, không ảnh hưởng nội dung.
+
+> <ide_selection>The user selected the lines 13 to 13 from
+  c:\Users\USER\Documents\HomeWork_WEBDEV\hw2-drum-kit\js\keyboard.js:
+  repeat
+
+  This may or may not be related to the current task.</ide_selection>
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md (mục Step 4 và Recorder UI
+  contract). Chỉ làm Step 4: FIFO Beat Recorder. Không sửa HTML/CSS; không sửa
+  audio-engine.js hay keyboard.js.
+
+  Phạm vi file: tạo js/recorder.js (file mới) và sửa js/main.js (chỉ thêm phần
+  nối dây recorder).
+
+  js/recorder.js (ES module, KHÔNG biết gì về audio hay DOM):
+  - export function createQueue(maxEvents = 256): hàng đợi FIFO với
+  enqueue(item), dequeue(), size(), toArray(), clear(). Khi vượt maxEvents thì
+  bỏ phần tử CŨ NHẤT (FIFO) chứ không bỏ phần tử mới.
+  - export function createRecorder(options = {}) trả về { start, stop, record,
+  play, cancel, isRecording, size }:
+    * start(): xóa dữ liệu cũ, ghi mốc thời gian bằng performance.now(), bật cờ
+  ghi.
+    * record(key): nếu đang ghi thì enqueue { key, t: performance.now() -
+  startTime }.
+    * stop(): tắt cờ ghi.
+    * play(onEvent): trả về Promise; lấy bản chụp (snapshot) của queue, đưa vào
+  một queue phát lại mới rồi dequeue theo thứ tự FIFO; với mỗi phần tử, đợi
+  đúng khoảng cách thời gian so với phần tử trước bằng setTimeout (tính lại
+  theo performance.now để KHÔNG trôi thời gian tích lũy) rồi gọi onEvent(key).
+  Promise resolve khi phát hết hoặc khi cancel().
+    * cancel(): hủy timer đang chờ (clearTimeout), đánh dấu dừng; không để
+  timer rò rỉ.
+    * Gọi play khi đang phát thì bỏ qua yêu cầu mới.
+
+  js/main.js (thêm vào, không viết lại phần cũ):
+  - Nối #rec-start, #rec-stop, #rec-play bằng document.querySelector và
+  addEventListener (không onclick).
+  - Khi nhấn pad (cả phím lẫn chuột): gọi recorder.record(key) với key lấy từ
+  KEY_ATTR của pad. Khi RECORDER ĐANG PHÁT LẠI thì kích hoạt pad nhưng KHÔNG
+  ghi lại.
+  - Record: gọi recorder.start(), cập nhật trạng thái nút bằng thuộc tính
+  disabled, ghi "Recording..." vào output#rec-status bằng textContent. Stop:
+  recorder.stop() và hiển thị "Recorded N hits." Play: hiển thị "Playing..."
+  rồi "Ready." khi xong; Stop/Play phải vô hiệu hóa hợp lý (không thể Play khi
+  đang Record, không thể Record khi đang Play). Nếu queue rỗng thì Play bị
+  disabled.
+  - Chỉ dùng textContent, không innerHTML; const/let; không var; không
+  console.log.
+
+  Tự kiểm tra: Select-String -Path js\*.js -Pattern
+  '\bvar\b|innerHTML|console\.log|setInterval' phải rỗng.
+
+  Hướng dẫn tôi kiểm thử riêng queue trong Console bằng dynamic import
+  (createQueue với maxEvents nhỏ để thấy FIFO bỏ phần tử cũ nhất).
+
+  Commit chỉ 2 file:
+  git add js/recorder.js js/main.js
+  git commit -m "feat(js): FIFO beat recorder"
+
+  Không push.
+
+● Write(js\recorder.js)
+  ⎿  Wrote 124 lines to js\recorder.js
+       1 const DEFAULT_MAX_EVENTS = 256;
+       2
+       4  * Creates a bounded FIFO queue. When it is full, enqueue drops
+         the oldest item.
+       5  * @param {number} [maxEvents] Maximum number of items kept.
+          size: () => number,
+       7  *   toArray: () => any[], clear: () => void }}
+       8  */
+      10   const limit = Number.isInteger(maxEvents) && maxEvents > 0 ? m
+         axEvents : DEFAULT_MAX_EVENTS;
+     … +121 lines (ctrl+o to expand)
+
+● Update(js\recorder.js)
+  ⎿  Added 3 lines
+       95        };
+       96  
+       97        function scheduleNext() {
+       98 +        if (!finishPlayback) {                                
+       99 +          return;                                             
+      100 +        }                                                     
+      101          if (replay.size() === 0) {
+      102            finishPlayback();
+      103            return;
+
+● Update(js\main.js)
+  ⎿  Added 1 line
+      1  import { resumeAudio, loadSample, play } from './audio-engine.js
+         ';
+      2  import { bindKeyboard } from './keyboard.js';
+      3 +import { createRecorder } from './recorder.js';                 
+      4  
+      5  const SOUND_ATTR = 'data-sound';
+      6  const KEY_ATTR = 'data-key';
+
+● Update(js\main.js)
+  ⎿  Added 5 lines
+       9  const ACTIVE_MS = 100;
+      10  
+      11  const padGrid = document.querySelector('.pad-grid');
+      12 +const recStart = document.querySelector('#rec-start');         
+      13 +const recStop = document.querySelector('#rec-stop');           
+      14 +const recPlay = document.querySelector('#rec-play');           
+      15 +const recStatus = document.querySelector('#rec-status');       
+      16  const activeTimers = new Map();
+      17 +const recorder = createRecorder();                             
+      18  
+      19  function findPad(key) {
+      20    return document.querySelector(`[${KEY_ATTR}="${CSS.escape(key
+          )}"]`);
+
+● Update(js\main.js)  ⎿  Added 48 lines
+      37    flashPad(pad);
+      38  }
+      39  
+      40 +function hitPad(pad) {                                         
+      41 +  triggerPad(pad);                                             
+      42 +  recorder.record(pad.getAttribute(KEY_ATTR));                 
+      43 +}                                                              
+      44 +                                                               
+      45 +function replayKey(key) {                                      
+      46 +  const pad = findPad(key);                                    
+      47 +  if (pad) {                                                   
+      48 +    triggerPad(pad);                                           
+      49 +  }                                                            
+      50 +}                                                              
+      51 +                                                               
+      52 +function showControls({ recording = false, playing = false } = 
+         +{}) {                                                          
+      53 +  const busy = recording || playing;                           
+      54 +  recStart.disabled = busy;                                    
+      55 +  recStop.disabled = !busy;                                    
+      56 +  recPlay.disabled = busy || recorder.size() === 0;            
+      57 +}                                                              
+      58 +                                                               
+      59 +function startRecording() {                                    
+      60 +  recorder.start();                                            
+      61 +  showControls({ recording: true });                           
+      62 +  recStatus.textContent = 'Recording...';                      
+      63 +}                                                              
+      64 +                                                               
+      65 +function stopRecording() {                                     
+      66 +  recorder.stop();                                             
+      67 +  const count = recorder.size();                               
+      68 +  showControls();                                              
+      69 +  recStatus.textContent = `Recorded ${count} ${count === 1 ? 'h
+         +it' : 'hits'}.`;                                               
+      70 +}                                                              
+      71 +                                                               
+      72 +async function playRecording() {                               
+      73 +  showControls({ playing: true });                             
+      74 +  recStatus.textContent = 'Playing...';                        
+      75 +  await recorder.play(replayKey);                              
+      76 +  showControls();                                              
+      77 +  recStatus.textContent = 'Ready.';                            
+      78 +}                                                              
+      79 +                                                               
+      80 +function handleStop() {                                        
+      81 +  if (recorder.isRecording()) {                                
+      82 +    stopRecording();                                           
+      83 +  } else {                                                     
+      84 +    recorder.cancel();                                         
+      85 +  }                                                            
+      86 +}                                                              
+      87 +                                                               
+      88  for (const pad of document.querySelectorAll(`[${SOUND_ATTR}]`))
+           {
+      89    loadSample(pad.getAttribute(SOUND_ATTR));
+      90  }
+
+● Update(js\main.js)
+  ⎿  Added 1 line, removed 1 line
+       94    if (!pad) {
+       95      return false;
+       96    }
+       97 -  triggerPad(pad);                                            
+       97 +  hitPad(pad);                                                
+       98    return true;
+       99  });
+      100  
+
+● Update(js\main.js)
+  ⎿  Added 5 lines, removed 1 line
+      101  padGrid.addEventListener('click', (event) => {
+      102    const pad = event.target.closest('.drum-pad');
+      103    if (pad && padGrid.contains(pad)) {
+      104 -    triggerPad(pad);                                          
+      104 +    hitPad(pad);                                              
+      105    }
+      106  });
+      107  
+      108 +recStart.addEventListener('click', startRecording);           
+      109 +recStop.addEventListener('click', handleStop);                
+      110 +recPlay.addEventListener('click', playRecording);             
+      111 +                                                              
+      112  window.addEventListener('pointerdown', resumeAudio, { once: tr
+           ue });
+      113  window.addEventListener('keydown', resumeAudio, { once: true }
+           );
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lỗi do đường dẫn import trong script thử tạm; tôi dùng đường dẫn tuyệt đối.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Step 4 xong. Commit 351fd31 (feat(js): FIFO beat recorder), gồm js/recorder.js
+  (mới, 127 dòng) và js/main.js (thêm phần nối dây). Chưa push. Tôi không sửa
+  HTML, CSS, audio-engine.js hay keyboard.js.
+
+  Tự kiểm tra:
+  - Pattern \bvar\b|innerHTML|console\.log|setInterval trên js\*.js trả về 0 kết
+    quả, và node --check không báo lỗi cú pháp.
+  - Tôi chạy recorder.js trong Node bằng một script tạm (đã xóa, không nằm trong
+    repo) và kết quả như sau:
+    - Queue giới hạn 3 phần tử: sau khi thêm 1 đến 5 còn [3, 4, 5], đúng FIFO.
+    - Ghi ba phím a, s, d rồi phát lại: các phím phát tại 15 ms, 110 ms và 280
+      ms. Khoảng cách giữa các phím khớp với lúc ghi (a→s khoảng 95 ms), và
+      không thấy trôi thời gian cộng dồn.
+    - play gọi hai lần liên tiếp: lần thứ hai bị bỏ qua. cancel() giữa chừng làm
+      Promise resolve và dừng timer.
+  - Tôi chưa chạy giao diện trong trình duyệt, nên các nút và trạng thái trên
+    trang cần bạn thử.
+
+  js/recorder.js
+  - createQueue(maxEvents = 256) trả về enqueue, dequeue, size, toArray, clear.
+    Khi vượt giới hạn, phần tử cũ nhất bị bỏ.
+  - createRecorder(options) trả về start, stop, record, play, cancel,
+    isRecording, size. isRecording và size là hàm.
+  - Sự kiện có dạng { key, t }, với t tính bằng performance.now() từ lúc
+    start().
+  - play(onEvent) lấy bản chụp, đưa vào queue phát lại mới rồi dequeue theo thứ
+    tự FIFO. Mỗi setTimeout được tính từ mốc performance.now() lúc bắt đầu phát,
+    không cộng dồn từng khoảng.
+  - Phát lại tính từ sự kiện đầu tiên: khoảng lặng trước nhịp đầu khi ghi bị bỏ
+    qua. Cách này khác với việc giữ nguyên t gốc.
+  - Tôi phải thêm một chốt chặn trong scheduleNext: nếu cancel() được gọi bên
+    trong onEvent thì không đặt thêm timer mới.
+
+  js/main.js
+  - hitPad (phím hoặc click) gọi triggerPad rồi recorder.record(key) với key lấy
+    từ KEY_ATTR. Khi phát lại, tôi dùng replayKey gọi thẳng triggerPad, nên
+    không ghi lại.
+  - showControls quản lý disabled của ba nút, nối bằng addEventListener('click',
+    ...).
+    - Recording: Record bị khóa, Stop mở, Play bị khóa.
+    - Playing: Record bị khóa, Stop mở (để hủy phát), Play bị khóa.
+    - Idle: Record mở, Stop bị khóa, Play bị khóa khi queue rỗng.
+  - Trạng thái hiển thị bằng textContent: "Recording...", "Recorded N hit(s).",
+    "Playing...", rồi "Ready.". Khi hủy phát giữa chừng cũng về "Ready.".
+
+  Cách kiểm thử queue trong Console (cần Live Server, trang mở ở
+  http://localhost:5500):
+
+  const { createQueue } = await import('/js/recorder.js');
+  const q = createQueue(3);
+  [1, 2, 3, 4, 5].forEach((n) => q.enqueue(n));
+  q.toArray();   // [3, 4, 5]: 1 và 2 (cũ nhất) đã bị bỏ
+  q.size();      // 3
+  q.dequeue();   // 3: lấy ra từ đầu hàng
+  q.toArray();   // [4, 5]
+  q.clear(); q.size();  // 0
+
+  Kiểm thử giao diện:
+  - Bấm Record, nhấn A, S, D, rồi Stop: kỳ vọng "Recorded 3 hits." và nút Play
+    mở.
+  - Bấm Play: thứ tự và nhịp phải giống lúc ghi.
+  - Bấm Stop trong lúc phát: dừng ngay, trạng thái "Ready.".
+  - Trong lúc phát, nhấn phím: pad vẫn kêu nhưng không bị ghi thêm.
+
+  Git chỉ cảnh báo LF sẽ chuyển thành CRLF, không ảnh hưởng nội dung.
+
+> Đọc project-rules.md và TASK_DECOMPOSITION.md. Chỉ làm task: viết README.md
+  (tiếng Anh) cho repo hw2-drum-kit. Không sửa file khác.
+
+  Nội dung: mô tả dự án; cách chạy bằng Live Server (http://localhost:5500,
+  không file:///); sơ đồ kiến trúc dạng văn bản (HTML contract -> main.js ->
+  keyboard/audio-engine/recorder); bảng phím; ghi chú về âm thanh tổng hợp bằng
+  tools/generate-sounds.py và cách chạy lại; mục "Live defense cheat sheet"
+  gồm 4 bảng nhỏ: Test A (đổi data-sound thành data-audio-src: sửa hằng
+  SOUND_ATTR trong js/main.js và đổi tên thuộc tính trong index.html), Test B
+  (thêm phím Space dừng toàn bộ âm thanh: chỉ cần thêm một nhánh trong callback
+  của bindKeyboard gọi stopAll()), Test C (đổi lưới pad sang container query:
+  bọc ul.pad-grid trong phần tử có container-type: inline-size rồi dùng
+  @container thay cho repeat(auto-fit, minmax(...)) trong css/layout.css), Test
+  D (đổi phím của pad: chỉ sửa data-key và nhãn kbd trong index.html). Ghi rõ
+  vì sao thiết kế này cho phép sửa nhanh.
+
+  Commit:
+  git add README.md
+  git commit -m "docs: readme & live-defense notes"
+
+  Không push.
+  ⎿  1 skill available
+
+● Write(README.md)
+  ⎿  Wrote 130 lines to README.md
+      1 # Web Drum Kit (HW2)
+      3 An electronic drum kit that runs in the browser. Play eight synth
+        ord a short beat to play it back. It is built with vanilla HTML5,
+         modern CSS and ES6+ JavaScript (ES modules) and the Web Audio AP
+        ayout is mobile-first and designed for a 375px screen first.
+      5 ## Run it
+      7 Serve the folder with the **Live Server** extension and open `htt
+        p://localhost:5500`.
+      9 Do not open `index.html` through `file:///`. ES modules and `fetc
+        Security-Policy is written for an HTTP origin.
+     … +163 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Đã viết xong README.md bằng tiếng Anh và commit 63b94cd (docs: readme &
+  live-defense notes). Commit chỉ có README.md (130 dòng), chưa push, không sửa
+  file nào khác.
+
+  Tôi chưa mở trang để thử lại các bước, vì task này chỉ viết tài liệu.
+
+  Nội dung:
+  - Mô tả và cách chạy: giới thiệu dự án, chạy bằng Live Server ở
+    http://localhost:5500, không dùng file:///, kèm lưu ý phải click hoặc bấm
+    phím một lần để mở khóa âm thanh.
+  - Bảng phím và recorder: bảng 8 phím và mô tả ngắn cách dùng Beat recorder.
+  - Cấu trúc và kiến trúc: cấu trúc thư mục, sơ đồ văn bản index.html → main.js
+    → keyboard / audio-engine / recorder, và mẫu HTML data contract.
+  - Âm thanh tổng hợp: cách chạy lại bằng python tools/generate-sounds.py.
+  - Live defense cheat sheet: 4 bảng nhỏ cho Test A–D, mỗi bảng có phần "Why it
+    is quick". Cuối file có mục tóm tắt vì sao thiết kế cho phép sửa nhanh.
+
+  Chỗ tôi viết khác hoặc nhiều hơn yêu cầu:
+  - Test B: ngoài việc thêm nhánh ' ' gọi stopAll(), tôi ghi thêm hai chi tiết
+    đúng với code hiện tại. Phải import stopAll trong main.js, và callback cần
+    trả về true để keyboard.js gọi preventDefault(), nếu không trang sẽ cuộn khi
+    bấm Space.
+  - Test C: bạn nói bọc ul.pad-grid trong một phần tử mới. Tôi ghi thêm là có
+    thể dùng luôn section cha, nên thực tế có thể không cần sửa HTML.
+  - Test D: ngoài data-key và nhãn kbd, tôi liệt kê thêm aria-keyshortcuts vì
+    thuộc tính này cũng chứa phím.
+  - Giới hạn 256 hit: README ghi recorder giữ tối đa 256 hit, lấy từ giá trị mặc
+    định của createQueue.
+
+  Git chỉ cảnh báo LF sẽ chuyển thành CRLF, không ảnh hưởng nội dung.
